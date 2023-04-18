@@ -1,0 +1,697 @@
+<html>
+    <head>
+        <title>demo13+</title>
+    </head>
+    <style>
+        *{
+            padding:0;
+            margin:0;
+        }
+
+        .header{
+            background-color:darkcyan;
+            text-align: center;
+            font-size:20px;
+            height:10%;
+        }
+
+        .bodys{
+            width:100%;
+            height:100%;
+        }
+        
+        .bodys_left{
+            float:left;
+            width:25%;
+            height:90%;
+            background-color:none;
+        }
+
+        .bodys_body{
+            height:584px;
+            overflow-x:scroll; /* 隐藏水平滚动栏 */
+            overflow-y: scroll;
+        }
+
+        .bodys_body button{
+            border:none;
+            width:100%;
+            height:45px;
+            font-size:15px;
+            background-color:white;
+            transition:background-color 0.8s;
+        }
+
+        .bodys_body div{
+            text-align: center;
+        }
+        .bodys_header{
+            font-size:20px;
+            padding:10px;
+            text-align: center;
+            background-color:white;
+        }
+
+        .bodys_middle{
+            float:left;
+            height:90%;
+            width:25%;
+            background-color:white;
+        }
+
+        .bodys_middle_header{
+            font-size:30px;
+            text-align:center;
+            margin-bottom:5px;
+        }
+
+        #bodys_middle_text{
+            height:584px;
+            overflow-x: hidden; /* 隐藏水平滚动栏 */
+            overflow-y: scroll;
+        }
+
+        .bodys_right{
+            float:left;
+            height:90%;
+            width:50%;
+            background: white;
+        }
+
+        .bodys_right_header{ 
+            font-size:15px;
+            background-color:LightBlue;
+        }
+
+        .button_{
+            position:absolute;
+            width:25%;
+            height:50px;
+            bottom:0;
+        }
+
+        ul{
+            list-style:none;
+            background-color:white;
+        }
+
+        .bodys_middle li{
+            display: inline-block;
+            align-content: center;
+            margin-right:30px;
+            font-size:20px;
+            width:80px;
+        }
+
+        .bilud_task{
+            position:absolute;
+            left:50%;
+            top:30%;
+            
+            padding:10px;
+            width:auto;
+            height:420px;
+            text-align:center;
+            margin-left:-200px;
+            border-radius:5px;
+            border:1px solid black;
+            background-color:white;
+        }
+
+        .bilud_task_button{
+            width:30%;
+            height:30px;
+        }
+
+    </style>
+
+    <body>
+    <div class="header">
+        <h1>事件管理微系统</h1>
+    </div>
+    <div class="bodys">
+        <div class="bodys_left">
+            <h2 class="bodys_header">分类列表</h2>
+            <div class="bodys_body">
+            </div>
+      
+                <button class="button_">新增分类</button>
+        </div>
+
+        <div class="bodys_middle">
+            <ul class="bodys_middle_header">
+                <li>所有</li>
+                <li>未完成</li>
+                <li>已完成</li>
+            </ul>
+            <div id="bodys_middle_text"></div>
+            <button class="button_">新增任务</button>
+        </div>
+        <div class="bodys_right">
+            <div class="bodys_right_header">
+                <h1 style="text-align: center;">标题</h1>
+            </div>
+                <span></span>
+            <div id="bodys_right_text" style="overflow: auto;"></div>
+        </div>
+    </div>
+
+    <!-模态框->
+    <div class="bilud_task" style="display:none;">
+        <h2 style="margin:10px;">新任务</h2>
+        <p>需要创建的任务名字:<input id="task_name" type="text" /></p>
+        <br>
+        <p>需要创建的任务时间:<input id="task_time" type="text" /></p>
+        <br>
+        <p>任务内容:</p>
+        <textarea id="task_value" style="width:300px;height:220px;"></textarea>
+        <br>
+        <button class="bilud_task_button">创建</button>
+        <button class="bilud_task_button">取消</button>
+    </div>
+
+    <!-编辑框>
+    <div class="bilud_task" style="display:none;">
+    <h2>编辑内容</h2>
+    <textarea id="edit_text" style="width:300px;height:390px;"></textarea>
+    <button id="comfirm">确认</button>
+    </div>
+    </body>
+
+    <script>
+        //任务列表类
+        class uls{
+            constructor(name,time){
+                this.name=name;
+                this.time_text_name=name+"-"+time;
+                this.childs=[];
+            }
+
+            make_dom(datas){
+                //if (data==null || data==""){console.log("数据输入不能为空");return;}
+                let data_name=this.name || datas.name;
+                let data_text_time_name=this.time_text_name || datas.time_text_name;
+                let div=document.createElement("div");
+                let span=document.createElement("span");
+                span.style.cssText="display:none;background:no-repeat url(./delete_.png); background-size:45%;width:30px;height:13px;";
+                let button=document.createElement("button");
+                button.style.cssText='padding-left:50px;text-align:start;white-space:pre;background:no-repeat url(./task.png) 13px 7px; background-size:8%;';
+                let ul=document.createElement("ul");
+                button.innerText=data_name+"    ";
+                ul.id=data_text_time_name;
+                ul.style.cssText="display:none;padding-left:13px;";
+                //如果内存存在则覆盖，否则新增
+                button.appendChild(span);
+                div.appendChild(button);
+                div.appendChild(ul);
+                return div;
+            }
+
+            //初始化构建dom树
+             go(data){
+                    let doms1=this.make_dom(data);
+                    if (!data.childs){console.log(doms1+"到底了");
+                    let div=Uls_child.prototype.make_text_dom(data);
+                    return div.body_left;}
+                    let kid=data.childs;
+                    for (let i=0;i<kid.length;i++){
+                        //当子元素存在，创建子节点并存入上一节父元素
+                        //let li=document.createElement("li");
+                        if (!kid[i]){continue;}
+                    let doms2=(kid[i].childs || kid[i].textchild)?this.go(kid[i]):this.make_dom(kid[i]);
+                    doms1.childNodes[1].appendChild(doms2);
+                    }
+                    //doms1.style.display="none";  
+                    return doms1;//{dom:doms1,result:result};
+                }
+
+
+        }
+
+        //任务类
+        class Uls_child{
+            constructor(name,time){
+                this.name=name;
+                this.time_text_name=name+"-"+time;
+                this.textchild={};
+            }
+
+            //根据父结构data创建dom树 oppion:指定升序还是降序还是默认 doing:指定排序未完成还是排序完成
+            make_text_dom(data,oppion,doing){
+                let datas_name=this.time_text_name || data.time_text_name;
+                let datas_textchild=this.textchild || data.textchild;
+                //存储data中创建的所有子任务dom
+                let score=document.createDocumentFragment();
+                let div=document.createElement("button");
+                div.style.cssText="font-size:15px;white-space:pre;"
+                //子任务时间排序数组
+                let time_arry=[];
+                for (let key of Object.keys(datas_textchild)){
+                        let time=new Date(key).getTime()
+                        time_arry.push(time);
+                }
+
+                (oppion=="升序")?time_arry=hs.prototype.faslt_paixu(time_arry,"升序")
+                :(oppion=="降序")?time_arry=hs.prototype.faslt_paixu(time_arry,"降序")
+                :"";
+
+                for (let key of time_arry){
+                    let div_time=document.createElement("div");
+                    //将子任务时间排序数组中的时间戳转化为基本日期格式
+                    let time=hs.prototype.getTime(key,["year","month","day"]);
+                    div_time.id=time;
+                    div_time.style.cssText="white-space:pre";
+                    div_time.innerText=time;
+                    //遍历每个时间点的任务列表
+                    Array.from(datas_textchild[time]).forEach((kid)=>{
+                            let mark;
+                                (!doing)?mark=true:(kid.done==doing)?mark=true:mark=null;
+                            if (!mark){return;}
+                            let div_value=document.createElement("div");
+                            let button=document.createElement("button");
+                            button.innerText="编辑";
+                            //button.value=kid.name;  
+                            //button.onclick=hs.prototype.edit_task.bind(hs);
+                            //div_value.style.cssText="white-space:pre";
+                            div_value.innerText=kid.name;
+                            div_value.id=kid.name;
+                            div_value.style.background="white";
+                            div_value.appendChild(button);
+                            div_time.appendChild(div_value);
+                        })
+
+                    if (div_time.children.length==0){continue;};
+                score.appendChild(div_time);
+                }
+                div.id=datas_name;
+                let names=this.name || data.name;
+                div.innerText=this.name || data.name+"   ";
+                let span=document.createElement("span");
+                span.style.cssText="display:none;background:no-repeat url(./delete_.png); background-size:45%;width:30px;height:13px;";
+                div.appendChild(span);
+
+                return {body_left:div,body_middle:score};
+
+            }
+
+            //将data数据插入father(任务类的textchild)中
+            make_text_child(father,data){
+                let names=data[0];
+                let values=data[2];
+                let time=data[1];
+                let child={
+                        name:names,
+                        done:"false",
+                        value:values
+                }
+                //data[1]:时间键任务
+                //以时间为键存储，当存在相同时间的任务时添加进相同的时间键中
+                let fathers=father.textchild;
+                if (fathers[time]){
+                    console.log("时间相同的任务"+child);
+                    //如果时间键内任务相同,不添加
+                    (fathers[time].indexOf(child)==-1)?"":fathers[time].push(child);
+                    return father;
+                }
+                //否则创建新的时间键
+                fathers[time]=[child];
+                return father;
+            }
+
+        }
+
+
+
+        class hs{
+            constructor(){
+            this.score=window.localStorage;
+            this.bodys=document.getElementsByClassName("bodys_body")[0];
+            this.button=document.getElementsByClassName("button_");
+            this.edit_tasks=document.getElementsByClassName("bilud_task")[1];
+            this.button2=document.getElementsByClassName("bilud_task_button");
+            this.kuang=document.getElementsByClassName("bilud_task")[0];
+            this.bodys_middle=document.getElementById("bodys_middle_text");
+            this.bodys_right={header_dom:null,time_dom:null,text_dom:null};
+            this.task_data={
+                task_name:document.getElementById("task_name"),
+                task_time:document.getElementById("task_time"),
+                task_value:document.getElementById("task_value")
+            }
+            this.arry=JSON.parse(this.score[0]);
+            this.fathers={dom:null,id:null,data:null};
+            this.now_dom={dom:null,id:null,data:null};
+            this.bodys.onclick=this.clicks.bind(this);
+            this.bodys_middle.onclick=this.bliud_bodyRight_text.bind(this);
+            this.button[0].onclick=this.store.bind(this);
+            this.button[1].onclick=this.bliud_tasks_display.bind(this);
+            this.button2[0].onclick=this.bliud_tasks.bind(this);
+            this.button2[1].onclick=this.bliud_tasks_display.bind(this);
+            document.getElementsByClassName("bodys_middle_header")[0].onclick=this.paixu_task.bind(this);
+            document.getElementById("comfirm").onclick=this.save_edit.bind(this);
+        }
+
+
+        //点击事件逻辑
+        clicks(click_dom){
+        let click_=click_dom.target;
+
+        if(click_.className=="bodys_body"){
+            return;
+        };
+
+        //判断是否点击删除图标
+        if (click_.tagName=="SPAN"){
+            let now_target=click_.parentNode.id || click_.parentNode.nextElementSibling.id;
+            this.finds(this.fathers.data,now_target,[],"delete");
+            //删除当前的文件夹按钮(判断是任务节点还是列表节点)
+            let node=click_.parentNode;
+            let nodes=(click_.parentNode.id && click_.parentNode.id.length>0)
+                        ?click_.parentNode
+                        :click_.parentNode.parentNode;
+            if(node.id==this.fathers.id){
+            this.fathers.dom=null;
+            this.fathers=null;
+            this.fathers.id=nus.dall;}
+            else{
+            this.now_dom.dom=null;
+            this.now_dom.data=null;
+            this.now_dom.id=null;
+            }
+            console.log("已删除",nodes);
+            nodes.remove();
+            return;
+        }
+
+        //控制删除图标显示
+        let _dom=click_.childNodes[1];
+        this.control_display(_dom,["inline-block"]);
+        let dom=(click_.id && click_.id.length>0)?click_:click_.nextElementSibling;
+        let id=dom.id;
+
+        //标记当前元素id是否（是父元素?）找到父元素
+        for (let a of this.arry){
+                            //如果创建时间相同说明找到该元素
+                    if (a.time_text_name==id){
+                        if (this.fathers.id==id){
+                            break;}
+                        
+                        let last_dom=this.fathers.data;
+                        (last_dom && last_dom.childs)?this.control_display(this.fathers.dom,["none"]):"";
+                        this.fathers.data=a;
+                        this.fathers.dom=dom;
+                        this.fathers.id=dom.id;
+                        (this.fathers.data.textchild)?this.fathers["data_kid"]=" ":"";
+                    }
+        }
+        //如果父节点存在且与当前点击dom相同，则判定为父元素
+        this.now_dom.dom=(this.fathers.dom!=null && this.fathers.id!=id)?dom:null;
+        this.now_dom.id=(this.now_dom.dom)?id:'';
+        let kids=this.finds(this.fathers.data,this.now_dom.id,[])[0];
+        this.now_dom.data=(kids==this.fathers.data)?"":kids;
+        //如果找到的元素不是任务节点，则更新该dom节点显示
+        if (kids.childs){
+            this.control_display(dom,["block"]);
+            this.bodys_middle.innerHTML="";
+        }
+        if(kids.textchild){
+            //检查当前节点是否是任务节点，如果是则构建dom
+            (this.fathers.data_kid)?"":this.now_dom["data_kid"]="";
+            (kids)?this.chenck_task(kids):"";
+            }
+        }
+
+        //oppion 指定显示开关属性
+        control_display(dom,oppion){
+            let styles=dom.style;
+            styles.display=(styles.display=="none")?oppion[0]:'none';
+        }   
+
+        //oppion:[]指定返回的日期类型
+        getTime(times,oppion){
+            let time=(times)?new Date(times):new Date();
+                    let arry={
+                        year:time.getFullYear(),
+                        month:time.getMonth()+1,
+                        day:time.getDate(),
+                        hour:time.getHours(),
+                        minute:time.getMinutes(),
+                        second:time.getSeconds()
+                        }
+
+                let str2="";
+                if (!oppion){return str2=arry.year+"-"+arry.month+"-"+arry.day+"-"+arry.hour+":"+arry.minute+":"+arry.second;}
+                let arrys=Object.keys(arry);
+                for (let key of oppion){
+                    (key=="year")?str2+=arry[key]
+                    :(key!="minute")?str2+="-"+arry[key]
+                    :str2+=":"+arry[key];
+                }
+
+                    return str2;
+        }
+
+        //data(当前点击节点)
+        chenck_task(data){
+        //不是任务节点返回
+        if (!data.textchild){
+            console.log("不是任务节点");
+            return;
+        }
+        //遍历子任务并添加到middle页面
+        let body=this.bodys_middle;
+        let dom=Uls_child.prototype.make_text_dom(data,"升序","false");
+        body.innerHTML="";
+        body.appendChild(dom.body_middle);
+        }
+
+        //向当前父节点结构插入新列表并更新储存以及返回当前dom节点  insert:要插入的子结构 dom:要插入的dom片段 
+        insert_dom(insert,dom){
+        let scores=this.arry;
+        //如果是默认状态（this.fathers为null）,则添加到body中并返回
+        if (!this.fathers.dom || !this.fathers.dom.style.display || this.fathers.dom.style.display=="none"){
+            scores.push(insert);
+            this.score.setItem(0,JSON.stringify(scores));
+            this.bodys.appendChild(dom);
+            console.log("默认插入body节点");
+            return this.bodys;}
+
+        let id=this.fathers.id;
+        for (let data of scores){   
+            if(data.time_text_name==id){
+                let find_dom=this.finds(data,this.now_dom.id,[])[0];
+                (find_dom.childs)?find_dom.childs.push(insert):console.log("当前没有可插入节点");
+                this.score.setItem(0,JSON.stringify(scores));
+                let mount_dom=this.now_dom.dom || this.fathers.dom;
+                (find_dom.childs)?mount_dom.appendChild(dom):"";
+                return;
+                }
+            }
+        //this.dom.appendChild(dom);
+        }
+
+        //创建新分类并储存
+         store(){
+            let quetion=prompt("请输入要创建文件的名字");
+            if (quetion==null || quetion==""){console.log("输入不能为空");return;}
+            let choose=confirm("是否要创建为任务分类?");
+            let time_text=this.getTime();
+            if (!choose){
+                let j=new Uls_child(quetion,time_text);
+                let dom=j.make_text_dom();
+                let doms=this.insert_dom(j,dom.body_left);
+                return;
+            }
+            let j=new uls(quetion,time_text);
+            //新分类
+            let dom=j.make_dom();
+            let doms=this.insert_dom(j,dom);
+        }
+
+        //(中间div点击事件)将点击的子任务内容创建到最右div中
+        bliud_bodyRight_text(dom){
+            let doms=dom.target;
+            let father_Dom_id=doms.parentNode.id || doms.parentElement.id || doms.id;
+            if (father_Dom_id=="bodys_middle_text"){return;}
+            //如果没有缓存dom则缓存
+            if (!this.bodys_right.header_dom){
+                let dom_arry=this.bodys_right;
+                let dom=document.getElementsByClassName("bodys_right")[0].children;
+                dom_arry.header_dom=dom[0].children[0];
+                dom_arry.time_dom=dom[1];
+                dom_arry.text_dom=dom[2];
+            }
+
+            if (doms.innerText=="编辑"){
+                let dom_s=this.fathers.data_kid || this.now_dom.data_kid;
+                this.edit_tasks.style.display="block";
+                //this.edit_task(doms);
+                this.edit_tasks.children[1].value=dom_s.value;
+                return;
+            }
+            //获取任务节点
+            let targets=this.finds(this.fathers.data,this.now_dom.id,[])[0];
+            //子任务的文本内容
+            let text="";
+            let arry_data=targets.textchild[father_Dom_id];
+            for (let i=0;i<arry_data.length;i++){
+                    if (arry_data[i].name==doms.id){
+                        text=arry_data[i].value;
+                        //缓存点击的子任务
+                        let data_kid=(this.fathers.data_kid)?this.fathers:this.now_dom;
+                        console.log(data_kid);
+                        data_kid.data_kid=arry_data[i];
+                        this.bodys_right.header_dom.innerText=arry_data[i].name;
+                        break;};
+                };
+
+            this.bodys_right.time_dom.innerText="任务结束日期:"+father_Dom_id;
+            this.bodys_right.text_dom.innerText=text;
+        }
+
+        edit_task(dom_){
+        let dom_s=this.fathers.data_kid || this.now_dom.data_kid;
+        let task_time=dom_s.parentNode;
+        let task_name=dom_s.id;
+
+        let click_kid_task=this.finds(this.fathers.data,this.now_dom.id,[])[0];
+        }
+
+        //保存编辑
+        save_edit(){
+        let text=this.edit_tasks.children[1].value;
+        let kid=(this.fathers.data_kid)?this.fathers:this.now_dom;
+        kid.data_kid.value=text;
+        this.score.setItem(0,JSON.stringify(this.arry));
+        document.getElementById("bodys_right_text").innerText=kid.data_kid.value;
+        this.edit_tasks.style.display="none";
+        }
+
+        //子任务排序 oppion:升序 降序 所有显示
+        paixu_task(dom){
+        let datas=this.now_dom.data || this.fathers.data;
+        
+        if (!datas || !datas.textchild){
+            return;
+        }
+        let text=dom.target.innerText;
+        
+        this.bodys_middle.innerHTML="";
+
+        let doms=(text=="所有")?Uls_child.prototype.make_text_dom(datas,"升序")
+                :(text=="未完成")?Uls_child.prototype.make_text_dom(datas,"升序","false")
+                :(text=="已完成")?Uls_child.prototype.make_text_dom(datas,"升序","true")
+                :null;
+            (doms)?this.bodys_middle.appendChild(doms.body_middle):"";
+        }
+
+        //快速排序
+        faslt_paixu(arry,oppion){
+            if (arry.length<=1){
+                return arry;
+            }
+        //基准
+        let mark=arry.pop();
+        let left_arry=[];
+        let right_arry=[];
+        for (let i=0;i<arry.length;i++){
+            if (arry[i]<mark){
+                left_arry.push(arry[i]);
+                continue;
+            }
+            right_arry.push(arry[i]);
+        }
+
+        return (oppion=="升序")
+        ?this.faslt_paixu(left_arry,oppion).concat(mark,this.faslt_paixu(right_arry,oppion))
+        :this.faslt_paixu(right_arry,oppion).concat(mark,this.faslt_paixu(left_arry,oppion));
+        }
+
+        //监听添加任务按钮
+        bliud_tasks(){
+            let mont_dom=this.now_dom.data.textchild || this.fathers.data.textchild;
+            if (!mont_dom){console.log("当前没有可插入节点");return;}
+            let id=this.now_dom.id;
+            let data=[
+                this.task_data["task_name"].value,
+                this.task_data["task_time"].value,
+                this.task_data["task_value"].value,
+                ]
+            let arry=this.arry;
+            
+            for (let a of arry){
+                if (a.time_text_name==this.fathers.id){
+                    //创建新的子任务并返回更新后的节点
+                    let find_kid=this.finds(a,id,[])[0];
+                    let kid=Uls_child.prototype.make_text_child(find_kid,data);
+                    //创键任务节点的子任务
+                    this.chenck_task(find_kid);
+                }
+            }
+            this.kuang.style.display="none";
+            this.score.setItem(0,JSON.stringify(arry));
+        }
+
+        bliud_tasks_display(){
+            let styles=this.kuang.style;
+            (styles.display=="none")?styles.display="block":styles.display="none";
+         }
+
+        //将子元素插入父元素中的指定节点 data:一级父结构 name:子类—name  result:递归结果 oppion(操作查到的元素)
+         finds(data,name,result,oppion){ 
+                    let child=data.childs || data.textchild;
+                    //如果查找到的是父元素
+                    if(!name || data.time_text_name==name){  
+                        if(oppion=="delete"){
+                            this.arry.splice(this.arry.indexOf(data),1);
+                            this.score.setItem(0,JSON.stringify(this.arry));
+                        }
+                        result.push(data);
+                        return result; }
+                    if (child instanceof Array){
+                        for (let i=0;i<child.length;i++){
+
+                                if (child[i].time_text_name==name){
+                                    result.push(child[i]);
+                                    (oppion=="delete")?child.splice(i,1):"";
+
+                                    this.score.setItem(0,JSON.stringify(this.arry));
+                                    return result;
+                                }
+                                 this.finds(child[i],name,result,oppion);
+                            };
+                    }
+                        (child[name])?result.push(child[name]):"";
+
+                    return result;
+             }
+        }
+
+        //window.localStorage
+        //网站初始化（读取内存并将内存数据构建为dom）
+        (function (){
+            let stocre=window.localStorage;
+
+            if (stocre.length==0){
+                stocre.setItem(0,"[]");
+                return;}
+
+            let bodys=document.getElementsByClassName("bodys_body")[0];
+            let cache=document.createDocumentFragment();
+            let arry=JSON.parse(stocre[0]);
+
+            for (let i=0;i<arry.length;i++){
+                //遍历父列表，如果有子元素则添加到父元素dom中
+                let a=arry[i];
+                if (!a.name){continue;};
+                //收集任务节点
+                let j=uls.prototype.go(a);
+                let dom=j.childNodes[0];
+                cache.appendChild(j);
+            }
+
+            bodys.appendChild(cache);
+        })();
+
+        let runing=new hs();
+    </script>
+</html>
